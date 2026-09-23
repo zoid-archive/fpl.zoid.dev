@@ -1,9 +1,13 @@
 name: Update Database
-# This workflow is triggered on pushes to the repository.
+# Hourly refresh of public/assets/fpl.db from vaastav/Fantasy-Premier-League.
 on:
   workflow_dispatch:
   schedule:
     - cron: '0 * * * *' # hourly
+
+concurrency:
+  group: update-database-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   NO_COLOR: true
@@ -12,37 +16,36 @@ env:
 jobs:
   restore:
     name: Update Database
-    timeout-minutes: 10
-    runs-on: [ubuntu-20.04]
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
     if: endsWith(github.ref, '/main')
+    permissions:
+      contents: write
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+      - uses: actions/checkout@v4
         with:
-          access_token: ${{ github.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/checkout@v3
-      - uses: oven-sh/setup-bun@v1
+      - uses: oven-sh/setup-bun@v2
 
-      - name: Turnstyle
-        uses: softprops/turnstyle@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install sqlite
+        run: sudo apt-get update && sudo apt-get install -y sqlite3
 
       - name: Install Dependencies
-        run: bun install
+        run: bun install --frozen-lockfile --ignore-scripts
 
       - name: Update Database
-        run: node scripts/getLatestFPLDatabase.mjs --clone
+        run: bun scripts/getLatestFPLDatabase.mjs --clone
 
-      - name: Push
-        uses: github-actions-x/commit@v2.9
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # push-branch: 'master'
-          commit-message: '[skip ci] Update Database'
-          force-add: 'true'
-          files: src/assets/fpl.db
-          name: Divyendu Singh (Bot)
-          email: divyendu.z@gmail.com
-          rebase: 'true'
+      - name: Commit and push
+        run: |
+          git config user.name "Divyendu Singh (Bot)"
+          git config user.email "divyendu.z@gmail.com"
+          git add public/assets/fpl.db
+          if git diff --cached --quiet; then
+            echo "Database unchanged, nothing to commit"
+            exit 0
+          fi
+          git commit -m "[skip ci] Update Database"
+          git pull --rebase origin main
+          git push

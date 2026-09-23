@@ -12,10 +12,10 @@ jobs:
   build:
     name: Test
     timeout-minutes: 5
-    runs-on: [ubuntu-20.04]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: oven-sh/setup-bun@v1
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
         run: bun install
