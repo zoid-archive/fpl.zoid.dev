@@ -18,9 +18,11 @@ export const Credit = ({ lastUpdated }: Props) => {
       </a>
       <span aria-hidden="true">·</span>
       <span>
-        Database updated:{' '}
+        Source revision dated:{' '}
         <span className="font-medium tabular-nums text-foreground/80">
-          {lastUpdated || 'loading…'}
+          {lastUpdated
+            ? new Date(lastUpdated).toISOString().slice(0, 10)
+            : 'loading…'}
         </span>
       </span>
     </p>

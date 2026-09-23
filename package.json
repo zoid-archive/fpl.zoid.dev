@@ -10,7 +10,7 @@
     "dev": "next dev -p 5173",
     "build": "next build",
     "start": "next start -p 5173",
-    "test": "tsc --noEmit && eslint .",
+    "test": "bun test scripts/seasons.test.mjs && tsc --noEmit && eslint .",
     "generate": "npx electric-sql generate"
   },
   "dependencies": {

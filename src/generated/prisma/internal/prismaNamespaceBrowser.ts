@@ -75,7 +75,8 @@ export const StrategyScalarFieldEnum = {
   updatedAt: 'updatedAt',
   name: 'name',
   text: 'text',
-  sql: 'sql'
+  sql: 'sql',
+  season: 'season'
 } as const
 
 export type StrategyScalarFieldEnum = (typeof StrategyScalarFieldEnum)[keyof typeof StrategyScalarFieldEnum]

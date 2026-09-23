@@ -30,6 +30,7 @@ export type StrategyMinAggregateOutputType = {
   name: string | null
   text: string | null
   sql: string | null
+  season: string | null
 }
 
 export type StrategyMaxAggregateOutputType = {
@@ -38,6 +39,7 @@ export type StrategyMaxAggregateOutputType = {
   name: string | null
   text: string | null
   sql: string | null
+  season: string | null
 }
 
 export type StrategyCountAggregateOutputType = {
@@ -46,6 +48,7 @@ export type StrategyCountAggregateOutputType = {
   name: number
   text: number
   sql: number
+  season: number
   _all: number
 }
 
@@ -56,6 +59,7 @@ export type StrategyMinAggregateInputType = {
   name?: true
   text?: true
   sql?: true
+  season?: true
 }
 
 export type StrategyMaxAggregateInputType = {
@@ -64,6 +68,7 @@ export type StrategyMaxAggregateInputType = {
   name?: true
   text?: true
   sql?: true
+  season?: true
 }
 
 export type StrategyCountAggregateInputType = {
@@ -72,6 +77,7 @@ export type StrategyCountAggregateInputType = {
   name?: true
   text?: true
   sql?: true
+  season?: true
   _all?: true
 }
 
@@ -153,6 +159,7 @@ export type StrategyGroupByOutputType = {
   name: string
   text: string
   sql: string
+  season: string
   _count: StrategyCountAggregateOutputType | null
   _min: StrategyMinAggregateOutputType | null
   _max: StrategyMaxAggregateOutputType | null
@@ -182,6 +189,7 @@ export type StrategyWhereInput = {
   name?: Prisma.StringFilter<"Strategy"> | string
   text?: Prisma.StringFilter<"Strategy"> | string
   sql?: Prisma.StringFilter<"Strategy"> | string
+  season?: Prisma.StringFilter<"Strategy"> | string
 }
 
 export type StrategyOrderByWithRelationInput = {
@@ -190,6 +198,7 @@ export type StrategyOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   text?: Prisma.SortOrder
   sql?: Prisma.SortOrder
+  season?: Prisma.SortOrder
 }
 
 export type StrategyWhereUniqueInput = Prisma.AtLeast<{
@@ -201,6 +210,7 @@ export type StrategyWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Strategy"> | string
   text?: Prisma.StringFilter<"Strategy"> | string
   sql?: Prisma.StringFilter<"Strategy"> | string
+  season?: Prisma.StringFilter<"Strategy"> | string
 }, "id">
 
 export type StrategyOrderByWithAggregationInput = {
@@ -209,6 +219,7 @@ export type StrategyOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   text?: Prisma.SortOrder
   sql?: Prisma.SortOrder
+  season?: Prisma.SortOrder
   _count?: Prisma.StrategyCountOrderByAggregateInput
   _max?: Prisma.StrategyMaxOrderByAggregateInput
   _min?: Prisma.StrategyMinOrderByAggregateInput
@@ -223,6 +234,7 @@ export type StrategyScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Strategy"> | string
   text?: Prisma.StringWithAggregatesFilter<"Strategy"> | string
   sql?: Prisma.StringWithAggregatesFilter<"Strategy"> | string
+  season?: Prisma.StringWithAggregatesFilter<"Strategy"> | string
 }
 
 export type StrategyCreateInput = {
@@ -231,6 +243,7 @@ export type StrategyCreateInput = {
   name: string
   text: string
   sql: string
+  season?: string
 }
 
 export type StrategyUncheckedCreateInput = {
@@ -239,6 +252,7 @@ export type StrategyUncheckedCreateInput = {
   name: string
   text: string
   sql: string
+  season?: string
 }
 
 export type StrategyUpdateInput = {
@@ -247,6 +261,7 @@ export type StrategyUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   sql?: Prisma.StringFieldUpdateOperationsInput | string
+  season?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type StrategyUncheckedUpdateInput = {
@@ -255,6 +270,7 @@ export type StrategyUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   sql?: Prisma.StringFieldUpdateOperationsInput | string
+  season?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type StrategyCreateManyInput = {
@@ -263,6 +279,7 @@ export type StrategyCreateManyInput = {
   name: string
   text: string
   sql: string
+  season?: string
 }
 
 export type StrategyUpdateManyMutationInput = {
@@ -271,6 +288,7 @@ export type StrategyUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   sql?: Prisma.StringFieldUpdateOperationsInput | string
+  season?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type StrategyUncheckedUpdateManyInput = {
@@ -279,6 +297,7 @@ export type StrategyUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   text?: Prisma.StringFieldUpdateOperationsInput | string
   sql?: Prisma.StringFieldUpdateOperationsInput | string
+  season?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type StrategyCountOrderByAggregateInput = {
@@ -287,6 +306,7 @@ export type StrategyCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   text?: Prisma.SortOrder
   sql?: Prisma.SortOrder
+  season?: Prisma.SortOrder
 }
 
 export type StrategyMaxOrderByAggregateInput = {
@@ -295,6 +315,7 @@ export type StrategyMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   text?: Prisma.SortOrder
   sql?: Prisma.SortOrder
+  season?: Prisma.SortOrder
 }
 
 export type StrategyMinOrderByAggregateInput = {
@@ -303,6 +324,7 @@ export type StrategyMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   text?: Prisma.SortOrder
   sql?: Prisma.SortOrder
+  season?: Prisma.SortOrder
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -321,6 +343,7 @@ export type StrategySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   name?: boolean
   text?: boolean
   sql?: boolean
+  season?: boolean
 }, ExtArgs["result"]["strategy"]>
 
 export type StrategySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -329,6 +352,7 @@ export type StrategySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   name?: boolean
   text?: boolean
   sql?: boolean
+  season?: boolean
 }, ExtArgs["result"]["strategy"]>
 
 export type StrategySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -337,6 +361,7 @@ export type StrategySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   name?: boolean
   text?: boolean
   sql?: boolean
+  season?: boolean
 }, ExtArgs["result"]["strategy"]>
 
 export type StrategySelectScalar = {
@@ -345,9 +370,10 @@ export type StrategySelectScalar = {
   name?: boolean
   text?: boolean
   sql?: boolean
+  season?: boolean
 }
 
-export type StrategyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "updatedAt" | "name" | "text" | "sql", ExtArgs["result"]["strategy"]>
+export type StrategyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "updatedAt" | "name" | "text" | "sql" | "season", ExtArgs["result"]["strategy"]>
 
 export type $StrategyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Strategy"
@@ -358,6 +384,7 @@ export type $StrategyPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     name: string
     text: string
     sql: string
+    season: string
   }, ExtArgs["result"]["strategy"]>
   composites: {}
 }
@@ -786,6 +813,7 @@ export interface StrategyFieldRefs {
   readonly name: Prisma.FieldRef<"Strategy", 'String'>
   readonly text: Prisma.FieldRef<"Strategy", 'String'>
   readonly sql: Prisma.FieldRef<"Strategy", 'String'>
+  readonly season: Prisma.FieldRef<"Strategy", 'String'>
 }
     
 

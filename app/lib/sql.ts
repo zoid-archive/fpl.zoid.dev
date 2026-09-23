@@ -65,8 +65,9 @@ export function getAllColumns() {
     sqlite_master m
     LEFT OUTER JOIN pragma_table_info((m.name)) p ON m.name <> p.name
   WHERE
-    m.type = 'table'
+    m.type IN ('table', 'view') AND m.name NOT LIKE 'sqlite_%'
   ORDER BY
+    CASE m.name WHEN 'players' THEN 0 WHEN 'player_seasons' THEN 1 ELSE 2 END,
     tableName,
     columnName;
       `

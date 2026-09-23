@@ -1,5 +1,4 @@
-import Dashboard from 'app/sections/Dashboard'
-import { SidePanel } from 'app/sections/SidePanel'
+import Workspace from 'app/sections/Workspace'
 import { notFound } from 'next/navigation'
 
 import { prisma } from 'app/lib/prisma'
@@ -22,18 +21,13 @@ async function Strategy({ params }: Props) {
   }
 
   return (
-    <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-6">
-      <div className="min-w-0 lg:col-span-3">
-        <Dashboard
-          name={strategy.name}
-          description={strategy.text}
-          queryFromDatabase={strategy.sql}
-        ></Dashboard>
-      </div>
-      <div className="min-w-0 self-start space-y-4 lg:sticky lg:top-6 lg:col-span-1">
-        <SidePanel></SidePanel>
-      </div>
-    </div>
+    <Workspace
+      key={strategy.id}
+      name={strategy.name}
+      description={strategy.text}
+      queryFromDatabase={strategy.sql}
+      seasonBinding={strategy.season}
+    />
   )
 }
 

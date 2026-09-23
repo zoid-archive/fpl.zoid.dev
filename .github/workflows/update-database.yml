@@ -41,7 +41,7 @@ jobs:
         run: |
           git config user.name "Divyendu Singh (Bot)"
           git config user.email "divyendu.z@gmail.com"
-          git add public/assets/fpl.db
+          git add public/assets/fpl.db app/data/fpl.json
           if git diff --cached --quiet; then
             echo "Database unchanged, nothing to commit"
             exit 0

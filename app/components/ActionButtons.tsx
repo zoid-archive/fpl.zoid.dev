@@ -8,8 +8,10 @@ import { PublishDialog } from './PublishDialog'
 interface ActionButtonsArgs {
   queryDraft: string
   setQueryDraft: Dispatch<SetStateAction<string>>
-  setQuery: Dispatch<SetStateAction<string>>
+  setQuery: (query: string) => void
   running?: boolean
+  season: string
+  canPublish: boolean
 }
 
 export const ActionButtons = ({
@@ -17,6 +19,8 @@ export const ActionButtons = ({
   setQueryDraft,
   setQuery,
   running,
+  season,
+  canPublish,
 }: ActionButtonsArgs) => {
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -43,7 +47,9 @@ export const ActionButtons = ({
         Format SQL
       </Button>
 
-      <PublishDialog query={queryDraft}></PublishDialog>
+      {canPublish && (
+        <PublishDialog key={season} query={queryDraft} season={season} />
+      )}
     </div>
   )
 }

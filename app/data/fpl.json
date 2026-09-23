@@ -1,0 +1,22 @@
+{
+  "currentSeason": "2026-27",
+  "revision": "5f3b3ed712c63be1",
+  "seasons": [
+    {
+      "season": "2026-27",
+      "status": "partial",
+      "sourceRevision": "9779cdbc0c07f6c900c2d0c181ddf6bb9c800f88",
+      "sourceUpdatedAt": "2026-08-28T11:47:53+02:00",
+      "importedAt": "2026-09-23T11:16:50.878Z",
+      "contentHash": "6545080c82f8c6f2278471b6e7a2d36a73f3e8a908d877865298dba7f8db078b"
+    },
+    {
+      "season": "2025-26",
+      "status": "completed",
+      "sourceRevision": "9779cdbc0c07f6c900c2d0c181ddf6bb9c800f88",
+      "sourceUpdatedAt": "2026-08-28T11:47:53+02:00",
+      "importedAt": "2026-09-23T11:16:51.932Z",
+      "contentHash": "1b86255fb573d5a2a2e44e313894640fadfb922c05afc138f05cc768cbad536d"
+    }
+  ]
+}

@@ -1,130 +1,91 @@
-import { useEffect, useState } from 'react'
-import { type QueryExecResult, SqlJsStatic } from 'sql.js'
-
+import { useCallback, useEffect, useState } from 'react'
+import { type QueryExecResult, type SqlJsStatic } from 'sql.js'
+import { createSeasonDatabase } from '../effects/DatabaseService'
 import { getRowDataFromResultSet } from '../lib/sql'
-import { Effect } from 'effect'
-import {
-  DatabaseService,
-  DatabaseServiceLive,
-} from '../effects/DatabaseService'
 
 interface UseSQLArgs {
   query: string
   databasePath: string
   sqlWASMPath: string
+  season: string
 }
 
-// sql.js is loaded through a <script> tag in the layout; poll until it is
-// available instead of waiting on an arbitrary fixed delay.
-const SQL_SCRIPT_POLL_INTERVAL_MS = 100
-const SQL_SCRIPT_MAX_ATTEMPTS = 100
+const engines = new Map<string, Promise<SqlJsStatic>>()
+
+function loadSQL(path: string) {
+  let engine = engines.get(path)
+  if (!engine) {
+    engine = (async () => {
+      for (let attempt = 0; attempt < 100; attempt++) {
+        if (window.initSqlJs)
+          return window.initSqlJs({ locateFile: () => path })
+        await new Promise((resolve) => window.setTimeout(resolve, 100))
+      }
+      throw new Error('SQL.js did not load. Reload the page to retry.')
+    })().catch((error) => {
+      engines.delete(path)
+      throw error
+    })
+    engines.set(path, engine)
+  }
+  return engine
+}
 
 export function useSQL<T = Record<string, string>>({
-  query: queryArg,
+  query: initialQuery,
   databasePath,
   sqlWASMPath,
+  season,
 }: UseSQLArgs) {
-  const [SQL, setSQL] = useState<SqlJsStatic | null>(null)
-  const [error, setError] = useState('')
-  const [query, setQuery] = useState(queryArg)
-  const [result, setResult] = useState<QueryExecResult[]>([])
-  const [running, setRunning] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [execution, setExecution] = useState({ query: initialQuery, run: 0 })
+  const [completed, setCompleted] = useState<{
+    key: string
+    result: QueryExecResult[]
+    error: string
+  } | null>(null)
+  const key = JSON.stringify([databasePath, sqlWASMPath, season, execution])
+  const setQuery = useCallback((query: string) => {
+    setExecution((previous) => ({ query, run: previous.run + 1 }))
+  }, [])
 
   useEffect(() => {
     let cancelled = false
-
-    const load = async (attempt: number) => {
-      if (cancelled) {
-        return
-      }
-
-      const initSqlJs = window.initSqlJs
-
-      if (!initSqlJs) {
-        if (attempt < SQL_SCRIPT_MAX_ATTEMPTS) {
-          window.setTimeout(
-            () => load(attempt + 1),
-            SQL_SCRIPT_POLL_INTERVAL_MS,
-          )
-        } else {
-          console.error(`Failed to load SQL.js`)
-          setLoading(false)
+    const execute = async () => {
+      try {
+        const SQL = await loadSQL(sqlWASMPath)
+        if (cancelled) return
+        const database = await createSeasonDatabase(SQL, databasePath, season)
+        try {
+          if (cancelled) return
+          const result = database.exec(execution.query)
+          if (!cancelled) setCompleted({ key, result, error: '' })
+        } finally {
+          database.close()
         }
-        return
-      }
-
-      const SQL = await initSqlJs({
-        locateFile: (url, scriptDirectory) => {
-          return sqlWASMPath
-        },
-      })
-      if (!cancelled) {
-        setSQL(SQL)
+      } catch (error) {
+        if (!cancelled)
+          setCompleted({
+            key,
+            result: [],
+            error: String(error).replace(/^Error:\s*/, ''),
+          })
       }
     }
-
-    load(0)
-
+    void execute()
     return () => {
       cancelled = true
     }
-  }, [sqlWASMPath])
+  }, [databasePath, sqlWASMPath, season, execution, key])
 
-  useEffect(() => {
-    const load = async () => {
-      if (!SQL) {
-        return
-      }
-
-      setRunning(true)
-
-      const program = DatabaseService.pipe(
-        Effect.flatMap((databaseService) => {
-          const database = databaseService.database(SQL, databasePath)
-          return database.pipe(
-            Effect.flatMap((database) => {
-              return databaseService.executeQuery(database, query)
-            }),
-          )
-        }),
-      )
-      const runnable = Effect.provide(program, DatabaseServiceLive)
-
-      runnable
-        .pipe(
-          Effect.map((result) => {
-            setResult(result)
-            setError('')
-          }),
-          Effect.catchAll((e) => {
-            console.error(e)
-            setError(e.message.replace(/^Error:\s*/, ''))
-            return Effect.succeed([])
-          }),
-          Effect.runPromise,
-        )
-        .then(() => {
-          setRunning(false)
-          setLoading(false)
-        })
-        .catch(() => {
-          setRunning(false)
-          setLoading(false)
-        })
-    }
-    load()
-  }, [query, databasePath, SQL])
-
-  const columns = result?.[0]?.columns || []
-  const data = getRowDataFromResultSet(columns, result || [])
-
+  // Never relabel an old result with the new season, even before the effect runs.
+  const current = completed?.key === key ? completed : null
+  const result = current?.result || []
   return {
-    data: data as T[],
-    error,
-    query,
+    data: getRowDataFromResultSet(result[0]?.columns || [], result) as T[],
+    error: current?.error || '',
+    query: execution.query,
     setQuery,
-    running,
-    loading,
+    loading: !current,
+    running: !current,
   }
 }

@@ -14,4 +14,5 @@ model Strategy {
   name      String
   text      String
   sql       String
+  season    String   @default("current")
 }

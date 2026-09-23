@@ -10,20 +10,37 @@ import { Credit } from '../components/Credit'
 import { ResultSet } from '../components/ResultSet'
 import { useSQL } from '../hooks/useSQL'
 import { getDefaultQuery } from '../lib/sql'
-
-export const FPL_DB_PATH = '/assets/fpl.db'
-export const SQL_WASM_WASM_PATH = '/assets/sql.js/1.8.0/sql-wasm.wasm'
+import {
+  FPL_DB_PATH,
+  SQL_WASM_WASM_PATH,
+  manifest,
+  resolveSeason,
+  seasonLabel,
+} from '../lib/seasons'
 
 interface Props {
   name?: string
   description?: string
   queryFromDatabase?: string
+  season: string
+  seasonBinding: string
+  onSeasonChange: (season: string) => void
 }
 
-function Dashboard({ name, description, queryFromDatabase }: Props) {
+function Dashboard({
+  name,
+  description,
+  queryFromDatabase,
+  season,
+  seasonBinding,
+  onSeasonChange,
+}: Props) {
   const initialQuery = queryFromDatabase || getDefaultQuery()
   const [queryDraft, setQueryDraft] = useState<string>(initialQuery)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const selectedSeason = manifest.seasons.find(
+    (entry) => entry.season === season,
+  )
 
   // Grow the editor with its content so no query line is ever clipped.
   // Re-run on window resize because line wrapping changes with width.
@@ -46,12 +63,7 @@ function Dashboard({ name, description, queryFromDatabase }: Props) {
     query: initialQuery,
     databasePath: FPL_DB_PATH,
     sqlWASMPath: SQL_WASM_WASM_PATH,
-  })
-
-  const { data: resultLastUpdated } = useSQL<{ lastUpdated: string }>({
-    query: `SELECT strftime('%d.%m.%Y %H:%M:%S (local time)', datetime(lastUpdated, 'localtime')) as "lastUpdated" FROM meta;`,
-    databasePath: FPL_DB_PATH,
-    sqlWASMPath: SQL_WASM_WASM_PATH,
+    season,
   })
 
   const executeQuery = () => {
@@ -68,10 +80,55 @@ function Dashboard({ name, description, queryFromDatabase }: Props) {
           {description && (
             <p className="mt-1 text-sm text-muted-foreground">{description}</p>
           )}
+          <p className="mt-2 text-xs text-muted-foreground">
+            Saved for{' '}
+            {seasonBinding === 'current'
+              ? 'the current season (follows rollover)'
+              : seasonBinding}
+            .
+            {season !== resolveSeason(seasonBinding) &&
+              ' Exploring another season — saved strategy unchanged.'}
+          </p>
         </div>
       )}
 
-      <Credit lastUpdated={resultLastUpdated?.[0]?.lastUpdated}></Credit>
+      <div className="space-y-2 rounded-lg border bg-muted/30 px-4 py-3">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <label htmlFor="season" className="text-sm font-medium">
+            Season
+          </label>
+          <select
+            id="season"
+            value={season}
+            onChange={(event) => onSeasonChange(event.target.value)}
+            className="h-9 rounded-md border bg-background px-3 text-sm shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2"
+          >
+            {!selectedSeason && (
+              <option value={season}>{seasonLabel(season)}</option>
+            )}
+            {manifest.seasons.map((entry) => (
+              <option key={entry.season} value={entry.season}>
+                {seasonLabel(entry.season)}
+              </option>
+            ))}
+          </select>
+          <span className="text-xs text-muted-foreground">
+            Cumulative totals
+            {selectedSeason?.status === 'partial'
+              ? ' · Partial season'
+              : selectedSeason
+                ? ' · Completed season'
+                : ''}
+          </span>
+        </div>
+        {selectedSeason && (
+          <Credit lastUpdated={selectedSeason.sourceUpdatedAt} />
+        )}
+        <p className="text-xs text-muted-foreground">
+          <code>players</code> uses this season. <code>player_seasons</code>{' '}
+          always includes all seasons.
+        </p>
+      </div>
 
       <Card
         title="Query"
@@ -81,6 +138,8 @@ function Dashboard({ name, description, queryFromDatabase }: Props) {
             setQueryDraft={setQueryDraft}
             setQuery={setQuery}
             running={running}
+            season={season}
+            canPublish={Boolean(selectedSeason)}
           ></ActionButtons>
         }
       >
@@ -100,7 +159,37 @@ function Dashboard({ name, description, queryFromDatabase }: Props) {
           aria-label="SQL query"
           className="min-h-[160px] max-h-[60vh] resize-none overflow-y-auto font-mono text-[13px] leading-relaxed"
         />
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+          <span className="text-muted-foreground">Try a query:</span>
+          <button
+            type="button"
+            className="underline underline-offset-2"
+            onClick={() => setQueryDraft(getDefaultQuery())}
+          >
+            Top goalkeepers
+          </button>
+          <button
+            type="button"
+            className="underline underline-offset-2"
+            onClick={() =>
+              setQueryDraft(
+                `SELECT\n  season,\n  COUNT(*) AS players,\n  MAX(total_points) AS highest_score\nFROM player_seasons\nGROUP BY season\nORDER BY season DESC;`,
+              )
+            }
+          >
+            Compare seasons
+          </button>
+          <span className="text-muted-foreground">
+            Examples replace the draft; execute when ready.
+          </span>
+        </div>
       </Card>
+
+      <p className="text-xs text-muted-foreground">
+        Partial and completed seasons are not like-for-like. Scoring rules may
+        differ; prices and ownership are snapshot values. Names are not
+        cross-season player IDs.
+      </p>
 
       {Boolean(error) && (
         <Alert variant="destructive">
@@ -110,14 +199,14 @@ function Dashboard({ name, description, queryFromDatabase }: Props) {
       )}
 
       {loading ? (
-        <Card title="Results">
+        <Card title={`Results · players: ${season}`}>
           <p className="py-8 text-center text-sm text-muted-foreground">
-            Loading the FPL database…
+            Running query for {season}…
           </p>
         </Card>
       ) : showResults && data ? (
         <Card
-          title="Results"
+          title={`Results · players: ${season}`}
           actions={
             <span className="text-xs tabular-nums text-muted-foreground">
               {data.length} {data.length === 1 ? 'row' : 'rows'}
@@ -127,7 +216,7 @@ function Dashboard({ name, description, queryFromDatabase }: Props) {
           <ResultSet data={data} />
         </Card>
       ) : showResults ? (
-        <Card title="Results">
+        <Card title={`Results · players: ${season}`}>
           <p className="py-8 text-center text-sm text-muted-foreground">
             The query returned no rows.
           </p>
