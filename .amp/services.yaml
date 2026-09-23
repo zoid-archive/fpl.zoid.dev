@@ -1,0 +1,11 @@
+# Amp orb services (https://ampcode.com/docs/orbs/customizing).
+# `amp orb services ensure` starts these and publishes portal URLs.
+services:
+  web:
+    # The repo's `bun run dev` pins -p 5173; use the injected $PORT instead so
+    # the portal URL works. Runs through a login shell.
+    command: bunx next dev --hostname 0.0.0.0 --port "$PORT"
+    portal:
+      url: /
+      title: FPL.lol (dev)
+      description: SQL over Fantasy Premier League data (Next.js dev server). Strategy publishing writes to the orb-local Postgres; Electric sync (localhost:5133) is not configured in this repo.

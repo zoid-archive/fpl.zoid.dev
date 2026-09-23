@@ -31,3 +31,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Amp orb portal state (written by `amp orb services ensure`)
+.amp/portals/
+

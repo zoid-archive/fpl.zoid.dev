@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Fast, idempotent resume hook for Amp orbs
+# (https://ampcode.com/docs/orbs/customizing): runs on orb resume with a 10s
+# budget. No dependency installs here. The Postgres service is systemd-owned
+# and normally starts by itself; this just makes sure and warns if it can't.
+
+if command -v pg_isready >/dev/null 2>&1 && ! pg_isready -q -h 127.0.0.1 -p 5432 -t 3; then
+  sudo systemctl start postgresql || true
+  if pg_isready -q -h 127.0.0.1 -p 5432 -t 5; then
+    echo "PostgreSQL started"
+  else
+    echo "Warning: PostgreSQL not accepting connections; Strategy publishing will fail until it is fixed." >&2
+  fi
+fi

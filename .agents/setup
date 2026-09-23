@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Environment setup for Amp orbs (https://ampcode.com/docs/orbs/customizing).
+# Runs on a fresh orb after clone and again after a repository update, before
+# the snapshot is published. Must be idempotent and fast on a warm filesystem.
+#
+# Provides: postgresql (Prisma server actions), sqlite3 (data-refresh script),
+# bun + node_modules, generated Prisma client, and a local `fpl` Postgres
+# database matching prisma/schema.prisma.
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+step() { printf '\n== %s ==\n' "$*"; }
+timer() {
+  local start=$SECONDS
+  "$@"
+  printf '(%ss)\n' "$((SECONDS - start))"
+}
+
+# --- System packages -------------------------------------------------------
+# postgresql: the Strategy-publishing server action (app/actions/createStrategy.ts)
+# talks to Postgres through Prisma.
+# sqlite3: scripts/getLatestFPLDatabase.mjs shells out to the sqlite3 CLI.
+# (sqldiff is used by that script too but Debian 12 has no package for it.)
+step "System packages"
+missing=()
+command -v psql >/dev/null 2>&1 || missing+=(postgresql)
+command -v sqlite3 >/dev/null 2>&1 || missing+=(sqlite3)
+if ((${#missing[@]})); then
+  timer sudo apt-get update -qq
+  timer sudo apt-get install -y "${missing[@]}"
+else
+  echo "psql + sqlite3 present, skipping apt"
+fi
+
+# --- Bun -------------------------------------------------------------------
+step "Bun"
+if command -v bun >/dev/null 2>&1; then
+  echo "bun $(bun --version) present"
+else
+  timer npm install -g bun
+fi
+
+# --- Node dependencies -----------------------------------------------------
+# --ignore-scripts: better-sqlite3 (transitive via electric-sql) has no prebuilt
+# binary for this orb's Node ABI and its source build fails. Nothing in this
+# repo loads that native module: the browser uses sql.js/wa-sqlite WASM and the
+# data-refresh script uses the sqlite3 CLI. The Prisma client is generated
+# explicitly below, so skipping postinstall scripts costs nothing.
+step "Node dependencies (bun.lockb)"
+timer bun install --frozen-lockfile --ignore-scripts
+
+# --- Prisma client ---------------------------------------------------------
+# Generation does not need a database connection or DATABASE_URL.
+step "Prisma client"
+timer bunx prisma generate
+
+# --- Local env -------------------------------------------------------------
+# .env is gitignored; Next.js and the Prisma CLI both auto-load it.
+step "Local .env"
+if [ -f .env ]; then
+  echo ".env exists, keeping it"
+else
+  cat >.env <<'EOF'
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/fpl?schema=public"
+EOF
+  echo "wrote .env with local DATABASE_URL"
+fi
+
+# --- PostgreSQL: speed over durability (throwaway orb database) ------------
+step "PostgreSQL service"
+pg_conf_dir="$(ls -d /etc/postgresql/*/main 2>/dev/null | head -n1 || true)"
+if [ -n "$pg_conf_dir" ] && [ ! -f "$pg_conf_dir/conf.d/99-amp-speed.conf" ]; then
+  sudo mkdir -p "$pg_conf_dir/conf.d"
+  sudo tee "$pg_conf_dir/conf.d/99-amp-speed.conf" >/dev/null <<'EOF'
+# Amp orb: throwaway database, prefer speed over durability.
+fsync = off
+synchronous_commit = off
+full_page_writes = off
+EOF
+  echo "wrote $pg_conf_dir/conf.d/99-amp-speed.conf"
+fi
+# systemd-owned services survive orb snapshots and restart on their own;
+# enable --now is a fast no-op when already running.
+timer sudo systemctl enable --now postgresql
+
+step "Postgres role + database"
+# Password matches the .env DATABASE_URL above; idempotent and fast.
+sudo -u postgres psql -qc "ALTER USER postgres PASSWORD 'postgres'"
+if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname = 'fpl'" | grep -q 1; then
+  sudo -u postgres createdb -O postgres fpl
+  echo "created database fpl"
+else
+  echo "database fpl exists"
+fi
+
+# Sync prisma/schema.prisma into the database. Idempotent, and it also picks
+# up schema changes when this script re-runs after a repository update on a
+# stale snapshot. Prisma reads DATABASE_URL from .env.
+step "Prisma schema sync (db push)"
+timer bunx prisma db push --skip-generate
+
+step "Setup complete"
