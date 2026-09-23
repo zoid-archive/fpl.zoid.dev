@@ -18,7 +18,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
-        run: bun install
+        # better-sqlite3 (transitive via electric-sql) cannot build against the
+        # runner Node ABI, and nothing in this repo loads it.
+        run: bun install --frozen-lockfile --ignore-scripts
 
       - name: Run Tests
         run: bun run test
