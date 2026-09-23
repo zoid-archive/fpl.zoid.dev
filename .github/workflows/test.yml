@@ -22,5 +22,8 @@ jobs:
         # runner Node ABI, and nothing in this repo loads it.
         run: bun install --frozen-lockfile --ignore-scripts
 
+      - name: Generate Prisma client
+        run: bunx prisma generate
+
       - name: Run Tests
         run: bun run test
