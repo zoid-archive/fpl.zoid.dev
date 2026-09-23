@@ -121,9 +121,7 @@ function Dashboard({
                 : ''}
           </span>
         </div>
-        {selectedSeason && (
-          <Credit lastUpdated={selectedSeason.sourceUpdatedAt} />
-        )}
+        {selectedSeason && <Credit season={selectedSeason} />}
         <p className="text-xs text-muted-foreground">
           <code>players</code> uses this season. <code>player_seasons</code>{' '}
           always includes all seasons.

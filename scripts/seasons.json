@@ -1,7 +1,12 @@
 {
   "currentSeason": "2026-27",
   "seasons": [
-    { "season": "2026-27", "status": "partial", "sourceRef": "master" },
-    { "season": "2025-26", "status": "completed", "sourceRef": "9779cdbc0c07f6c900c2d0c181ddf6bb9c800f88" }
+    { "season": "2026-27", "status": "partial", "source": "official" },
+    {
+      "season": "2025-26",
+      "status": "completed",
+      "source": "github",
+      "sourceRef": "9779cdbc0c07f6c900c2d0c181ddf6bb9c800f88"
+    }
   ]
 }

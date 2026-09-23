@@ -1,5 +1,6 @@
 name: Update Database
-# Hourly refresh of public/assets/fpl.db from vaastav/Fantasy-Premier-League.
+# Hourly official FPL snapshot + pinned GitHub archives. Only Actions writes;
+# Vercel serves the committed bundle and never persists refresh output.
 on:
   workflow_dispatch:
   schedule:
@@ -35,7 +36,7 @@ jobs:
         run: bun install --frozen-lockfile --ignore-scripts
 
       - name: Update Database
-        run: bun scripts/getLatestFPLDatabase.mjs --clone
+        run: bun scripts/getLatestFPLDatabase.mjs
 
       - name: Commit and push
         run: |
@@ -44,6 +45,7 @@ jobs:
           git add public/assets/fpl.db app/data/fpl.json
           if git diff --cached --quiet; then
             echo "Database unchanged, nothing to commit"
+            echo "No data or coverage changes; bundle and manifest retained." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           git commit -m "[skip ci] Update Database"

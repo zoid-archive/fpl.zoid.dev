@@ -1,14 +1,289 @@
 {
+  "schemaVersion": 2,
   "currentSeason": "2026-27",
-  "revision": "5f3b3ed712c63be1",
+  "revision": "21f169abea93742b",
   "seasons": [
     {
       "season": "2026-27",
       "status": "partial",
-      "sourceRevision": "9779cdbc0c07f6c900c2d0c181ddf6bb9c800f88",
-      "sourceUpdatedAt": "2026-08-28T11:47:53+02:00",
-      "importedAt": "2026-09-23T11:16:50.878Z",
-      "contentHash": "6545080c82f8c6f2278471b6e7a2d36a73f3e8a908d877865298dba7f8db078b"
+      "sourceRevision": "20d9a84e473f03cc7ca7f1302257f10ba34344f355a7613e6f97d343b55e1000",
+      "sourceUpdatedAt": null,
+      "importedAt": "2026-09-23T12:47:30.410Z",
+      "contentHash": "45501bd04f061c11c55df18996e0dbb06515e155c5946df2992cfb671fe48cf0",
+      "source": "official",
+      "sourceURL": "https://fantasy.premierleague.com/api/bootstrap-static/",
+      "capturedAt": "2026-09-23T12:47:30.408Z",
+      "coverage": {
+        "events": [
+          {
+            "id": 1,
+            "finished": true,
+            "dataChecked": true,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 2,
+            "finished": true,
+            "dataChecked": true,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 3,
+            "finished": true,
+            "dataChecked": true,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 4,
+            "finished": true,
+            "dataChecked": true,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 5,
+            "finished": true,
+            "dataChecked": true,
+            "isCurrent": true,
+            "isNext": false
+          },
+          {
+            "id": 6,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": true
+          },
+          {
+            "id": 7,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 8,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 9,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 10,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 11,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 12,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 13,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 14,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 15,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 16,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 17,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 18,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 19,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 20,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 21,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 22,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 23,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 24,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 25,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 26,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 27,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 28,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 29,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 30,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 31,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 32,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 33,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 34,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 35,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 36,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 37,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          },
+          {
+            "id": 38,
+            "finished": false,
+            "dataChecked": false,
+            "isCurrent": false,
+            "isNext": false
+          }
+        ]
+      },
+      "dataChangedAt": "2026-09-23T12:47:30.410Z"
     },
     {
       "season": "2025-26",
@@ -16,7 +291,10 @@
       "sourceRevision": "9779cdbc0c07f6c900c2d0c181ddf6bb9c800f88",
       "sourceUpdatedAt": "2026-08-28T11:47:53+02:00",
       "importedAt": "2026-09-23T11:16:51.932Z",
-      "contentHash": "1b86255fb573d5a2a2e44e313894640fadfb922c05afc138f05cc768cbad536d"
+      "contentHash": "1b86255fb573d5a2a2e44e313894640fadfb922c05afc138f05cc768cbad536d",
+      "source": "github",
+      "sourceURL": "https://github.com/vaastav/Fantasy-Premier-League",
+      "dataChangedAt": "2026-09-23T11:16:51.932Z"
     }
   ]
 }
