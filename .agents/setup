@@ -100,6 +100,7 @@ fi
 # up schema changes when this script re-runs after a repository update on a
 # stale snapshot. Prisma reads DATABASE_URL from .env.
 step "Prisma schema sync (db push)"
-timer bunx prisma db push --skip-generate
+# Prisma 7 dropped --skip-generate; db push no longer generates the client.
+timer bunx prisma db push
 
 step "Setup complete"

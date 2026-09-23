@@ -1,16 +1,17 @@
-import { PrismaClient } from '@prisma/client'
 import Dashboard from 'app/sections/Dashboard'
 import { SidePanel } from 'app/sections/SidePanel'
 import { notFound } from 'next/navigation'
 
+import { prisma } from 'app/lib/prisma'
+
 interface Props {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
-async function Strategy({ params: { id } }: Props) {
-  const prisma = new PrismaClient()
+async function Strategy({ params }: Props) {
+  const { id } = await params
   const strategy = await prisma.strategy.findUnique({
     where: {
       id,

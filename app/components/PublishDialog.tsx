@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label'
 import { useElectric } from 'app/Providers'
 import { createStrategy } from 'app/actions/createStrategy'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import slugify from 'slugify'
 
 interface Props {
@@ -30,15 +30,13 @@ export const PublishDialog = ({ query }: Props) => {
   const [description, setDescription] = useState('')
   const [publishing, setPublishing] = useState(false)
   const [publishError, setPublishError] = useState('')
-  const [origin, setOrigin] = useState('')
   const [copied, setCopied] = useState(false)
 
   const id = slugify(name, { lower: true })
-  const strategyUrl = origin ? `${origin}/strategy/${id}` : `/strategy/${id}`
-
-  useEffect(() => {
-    setOrigin(window.location.origin)
-  }, [])
+  const strategyUrl =
+    typeof window === 'undefined'
+      ? `/strategy/${id}`
+      : `${window.location.origin}/strategy/${id}`
 
   if (!electric) {
     return null

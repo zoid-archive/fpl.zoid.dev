@@ -7,7 +7,7 @@ export function formatQuery(query: string) {
     try: () =>
       format(query, {
         language: 'postgresql',
-        uppercase: true,
+        keywordCase: 'upper',
       }),
     catch: (e) => {
       console.error(`Failed to format SQL`)

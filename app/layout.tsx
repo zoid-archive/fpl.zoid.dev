@@ -1,5 +1,4 @@
 import Script from 'next/script'
-import 'tailwindcss/tailwind.css'
 
 import { Providers } from './Providers'
 import './globals.css'

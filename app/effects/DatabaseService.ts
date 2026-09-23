@@ -7,14 +7,14 @@ export interface DatabaseService {
     // TODO: SQL probably should be injected?
     SQL: SqlJsStatic,
     databasePath: string,
-  ) => Effect.Effect<never, Error, Database>
+  ) => Effect.Effect<Database, Error>
   executeQuery: (
     database: Database,
     query: string,
-  ) => Effect.Effect<never, QueryExecutionError, QueryExecResult[]>
+  ) => Effect.Effect<QueryExecResult[], QueryExecutionError>
 }
 
-export const DatabaseService = Context.Tag<DatabaseService>()
+export const DatabaseService = Context.GenericTag<DatabaseService>('DatabaseService')
 
 export const DatabaseServiceLive = Layer.succeed(
   DatabaseService,
