@@ -12,7 +12,7 @@ const args = arg({
 const clone = args['--clone'] || false
 
 const FPL_DB_PATH = 'public/assets/fpl.db'
-const SEASON = '2025-26'
+const SEASON = '2026-27'
 const CSV_PATH = `Fantasy-Premier-League/data/${SEASON}/cleaned_players.csv`
 
 await task('fetch Fantasy-Premier-League data', async () => {
