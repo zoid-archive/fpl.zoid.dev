@@ -31,17 +31,33 @@ export const Strategies = ({ db }: Props) => {
       await strategyShape.synced
     }
     f()
-  }, [])
+  }, [db])
 
   return (
-    <Card title="Strategies">
-      {strategies?.map((strategy) => {
-        return (
-          <div key={strategy.id} className="w-full my-2">
-            <Link href={`/strategy/${strategy.id}`}>{strategy.name}</Link>
-          </div>
-        )
-      })}
+    <Card title="Strategies" description="Community-published queries">
+      {strategies && strategies.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          Nothing published yet — run a query and hit Publish.
+        </p>
+      ) : (
+        <ul className="space-y-1">
+          {strategies?.map((strategy) => {
+            return (
+              <li key={strategy.id} className="min-w-0">
+                <Link
+                  href={`/strategy/${strategy.id}`}
+                  className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                >
+                  <span className="truncate">{strategy.name}</span>
+                  <span aria-hidden="true" className="text-muted-foreground">
+                    →
+                  </span>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      )}
     </Card>
   )
 }
@@ -62,7 +78,7 @@ export const SidePanel = () => {
     <>
       {electric && <Strategies db={electric?.db}></Strategies>}
 
-      <Card title="Database Schema">
+      <Card title="Database schema" description="Tables bundled with the app">
         <SchemaTree data={structureData} />
       </Card>
     </>

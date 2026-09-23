@@ -5,12 +5,12 @@ import { Providers } from './Providers'
 import './globals.css'
 import { Menu } from './sections/Menu'
 
-const FAVICON_PATH = '/assets/favicon.png'
 const SQL_WASM_JS_PATH = '/assets/sql.js/1.8.0/sql-wasm.js'
 
 export const metadata = {
-  title: 'FPL.zoid.dev - analyse fantasy premier league data with SQL',
-  description: 'FPL.zoid.dev - analyse fantasy premier league data with SQL',
+  title: 'FPL.lol — analyse fantasy premier league data with SQL',
+  description:
+    'Query Fantasy Premier League data with SQL, right in your browser — no backend, no signup.',
 }
 
 export default function RootLayout({
@@ -21,15 +21,29 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href={FAVICON_PATH} />
+        {/* The favicon is served from app/favicon.ico by the Next.js
+            app-router convention. */}
         <Script src={SQL_WASM_JS_PATH}></Script>
       </head>
-      <body className="flex flex-col items-center justify-center pt-4 lg:mx-32">
+      <body className="min-h-screen bg-background text-foreground antialiased">
         <Providers>
-          <div className="mb-2">
+          <div className="mx-auto w-full max-w-[1400px] px-4 pb-12 pt-5 sm:px-6 lg:px-8">
             <Menu />
+            <main className="mt-4 w-full">{children}</main>
+            <footer className="mt-10 flex flex-wrap items-center justify-between gap-2 border-t pt-4 text-xs text-muted-foreground">
+              <span>
+                FPL.lol — Fantasy Premier League data, queried with SQL.
+              </span>
+              <a
+                href="https://trackfootball.app"
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-2 transition-colors hover:text-foreground"
+              >
+                Made with ♥ · TrackFootball.app
+              </a>
+            </footer>
           </div>
-          <div>{children}</div>
         </Providers>
       </body>
     </html>

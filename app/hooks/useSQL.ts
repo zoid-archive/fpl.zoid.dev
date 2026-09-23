@@ -14,6 +14,11 @@ interface UseSQLArgs {
   sqlWASMPath: string
 }
 
+// sql.js is loaded through a <script> tag in the layout; poll until it is
+// available instead of waiting on an arbitrary fixed delay.
+const SQL_SCRIPT_POLL_INTERVAL_MS = 100
+const SQL_SCRIPT_MAX_ATTEMPTS = 100
+
 export function useSQL<T = Record<string, string>>({
   query: queryArg,
   databasePath,
@@ -23,13 +28,29 @@ export function useSQL<T = Record<string, string>>({
   const [error, setError] = useState('')
   const [query, setQuery] = useState(queryArg)
   const [result, setResult] = useState<QueryExecResult[]>([])
+  const [running, setRunning] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const load = async () => {
+    let cancelled = false
+
+    const load = async (attempt: number) => {
+      if (cancelled) {
+        return
+      }
+
       const initSqlJs = window.initSqlJs
 
       if (!initSqlJs) {
-        console.error(`Failed to load SQL.js`)
+        if (attempt < SQL_SCRIPT_MAX_ATTEMPTS) {
+          window.setTimeout(
+            () => load(attempt + 1),
+            SQL_SCRIPT_POLL_INTERVAL_MS,
+          )
+        } else {
+          console.error(`Failed to load SQL.js`)
+          setLoading(false)
+        }
         return
       }
 
@@ -38,20 +59,25 @@ export function useSQL<T = Record<string, string>>({
           return sqlWASMPath
         },
       })
-      setSQL(SQL)
+      if (!cancelled) {
+        setSQL(SQL)
+      }
     }
 
-    setTimeout(() => {
-      load()
-    }, 500)
+    load(0)
+
+    return () => {
+      cancelled = true
+    }
   }, [sqlWASMPath])
 
   useEffect(() => {
     const load = async () => {
       if (!SQL) {
-        console.error(`Failed to initialize SQL.js`)
         return
       }
+
+      setRunning(true)
 
       const program = DatabaseService.pipe(
         Effect.flatMap((databaseService) => {
@@ -65,18 +91,27 @@ export function useSQL<T = Record<string, string>>({
       )
       const runnable = Effect.provide(program, DatabaseServiceLive)
 
-      runnable.pipe(
-        Effect.map((result) => {
-          setResult(result)
-          setError('')
-        }),
-        Effect.catchAll((e) => {
-          console.error(e)
-          setError(e.message)
-          return Effect.succeed([])
-        }),
-        Effect.runPromise,
-      )
+      runnable
+        .pipe(
+          Effect.map((result) => {
+            setResult(result)
+            setError('')
+          }),
+          Effect.catchAll((e) => {
+            console.error(e)
+            setError(e.message.replace(/^Error:\s*/, ''))
+            return Effect.succeed([])
+          }),
+          Effect.runPromise,
+        )
+        .then(() => {
+          setRunning(false)
+          setLoading(false)
+        })
+        .catch(() => {
+          setRunning(false)
+          setLoading(false)
+        })
     }
     load()
   }, [query, databasePath, SQL])
@@ -89,5 +124,7 @@ export function useSQL<T = Record<string, string>>({
     error,
     query,
     setQuery,
+    running,
+    loading,
   }
 }

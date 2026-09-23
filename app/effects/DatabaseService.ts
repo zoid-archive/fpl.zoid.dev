@@ -26,7 +26,16 @@ export const DatabaseServiceLive = Layer.succeed(
   }),
 )
 
+// The SQLite database is read-only and expensive to build (full file fetch +
+// parse), so cache one instance per path instead of rebuilding it per query.
+const databaseCache = new Map<string, Database>()
+
 function getDatabase(SQL: SqlJsStatic, databasePath: string) {
+  const cached = databaseCache.get(databasePath)
+  if (cached) {
+    return Effect.succeed(cached)
+  }
+
   const program = pipe(
     Effect.tryPromise({
       try: () => fetch(databasePath),
@@ -38,7 +47,11 @@ function getDatabase(SQL: SqlJsStatic, databasePath: string) {
         catch: (e) => new DatabaseCreationError(`${e}`),
       }),
     ),
-    Effect.map((buffer) => new SQL.Database(new Uint8Array(buffer))),
+    Effect.map((buffer) => {
+      const database = new SQL.Database(new Uint8Array(buffer))
+      databaseCache.set(databasePath, database)
+      return database
+    }),
   )
   return program
 }

@@ -8,27 +8,33 @@ import { PublishDialog } from './PublishDialog'
 interface ActionButtonsArgs {
   queryDraft: string
   setQueryDraft: Dispatch<SetStateAction<string>>
-  query: string
   setQuery: Dispatch<SetStateAction<string>>
+  running?: boolean
 }
 
 export const ActionButtons = ({
   queryDraft,
   setQueryDraft,
-  query,
   setQuery,
+  running,
 }: ActionButtonsArgs) => {
   return (
-    <div className="flex flex-row flex-wrap m-4 gap-x-1 sm:gap-x-2 gap-y-2">
+    <div className="flex flex-wrap items-center gap-2">
       <Button
         onClick={() => {
           setQuery(queryDraft)
         }}
+        disabled={running}
+        title="Ctrl / ⌘ + Enter"
       >
-        Execute SQL
+        {running ? 'Running…' : 'Execute SQL'}
+        <kbd className="ml-1 hidden rounded border border-primary-foreground/20 bg-primary-foreground/10 px-1.5 py-0.5 text-[10px] font-medium sm:inline-block">
+          Ctrl+↵
+        </kbd>
       </Button>
 
       <Button
+        variant="outline"
         onClick={() => {
           const query = Effect.runSync(formatQuery(queryDraft))
           setQueryDraft(query)
@@ -37,7 +43,7 @@ export const ActionButtons = ({
         Format SQL
       </Button>
 
-      <PublishDialog query={query}></PublishDialog>
+      <PublishDialog query={queryDraft}></PublishDialog>
     </div>
   )
 }

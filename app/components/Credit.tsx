@@ -1,26 +1,28 @@
 'use client'
 
-import { Card } from './Card'
-
 interface Props {
   lastUpdated?: string
 }
 
 export const Credit = ({ lastUpdated }: Props) => {
   return (
-    <div className="grid grid-cols-2 gap-2 grid-row">
-      <Card title="Data Source Credits">
-        <a
-          href="https://github.com/vaastav/Fantasy-Premier-League"
-          target="_blank"
-        >
-          https://github.com/vaastav/Fantasy-Premier-League
-        </a>
-      </Card>
-
-      <Card title="Last Updated">
-        <span>{lastUpdated || 'Loading'}</span>
-      </Card>
-    </div>
+    <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
+      <span>Data from</span>
+      <a
+        href="https://github.com/vaastav/Fantasy-Premier-League"
+        target="_blank"
+        rel="noreferrer"
+        className="font-medium text-foreground/80 underline decoration-muted-foreground/40 underline-offset-2 transition-colors hover:text-foreground hover:decoration-muted-foreground"
+      >
+        vaastav/Fantasy-Premier-League
+      </a>
+      <span aria-hidden="true">·</span>
+      <span>
+        Database updated:{' '}
+        <span className="font-medium tabular-nums text-foreground/80">
+          {lastUpdated || 'loading…'}
+        </span>
+      </span>
+    </p>
   )
 }

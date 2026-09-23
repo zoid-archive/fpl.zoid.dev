@@ -21,14 +21,15 @@ async function Strategy({ params: { id } }: Props) {
   }
 
   return (
-    <div className="grid w-full grid-cols-4 gap-2 grid-row">
-      <div className="col-span-3">
+    <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-6">
+      <div className="min-w-0 lg:col-span-3">
         <Dashboard
           name={strategy.name}
+          description={strategy.text}
           queryFromDatabase={strategy.sql}
         ></Dashboard>
       </div>
-      <div className="col-span-1">
+      <div className="min-w-0 self-start space-y-4 lg:sticky lg:top-6 lg:col-span-1">
         <SidePanel></SidePanel>
       </div>
     </div>

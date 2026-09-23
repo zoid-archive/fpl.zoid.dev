@@ -64,6 +64,8 @@ export function getAllColumns() {
   FROM
     sqlite_master m
     LEFT OUTER JOIN pragma_table_info((m.name)) p ON m.name <> p.name
+  WHERE
+    m.type = 'table'
   ORDER BY
     tableName,
     columnName;

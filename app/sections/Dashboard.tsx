@@ -1,9 +1,9 @@
 'use client'
 
-import { Alert } from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from 'app/components/Card'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { ActionButtons } from '../components/ActionButtons'
 import { Credit } from '../components/Credit'
@@ -16,15 +16,34 @@ export const SQL_WASM_WASM_PATH = '/assets/sql.js/1.8.0/sql-wasm.wasm'
 
 interface Props {
   name?: string
+  description?: string
   queryFromDatabase?: string
 }
 
-function Dashboard({ name, queryFromDatabase }: Props) {
-  const [queryDraft, setQueryDraft] = useState<string>(
-    queryFromDatabase || getDefaultQuery(),
-  )
-  const { data, error, query, setQuery } = useSQL({
-    query: getDefaultQuery(),
+function Dashboard({ name, description, queryFromDatabase }: Props) {
+  const initialQuery = queryFromDatabase || getDefaultQuery()
+  const [queryDraft, setQueryDraft] = useState<string>(initialQuery)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Grow the editor with its content so no query line is ever clipped.
+  // Re-run on window resize because line wrapping changes with width.
+  useEffect(() => {
+    const el = textareaRef.current
+    if (!el) {
+      return
+    }
+    const resize = () => {
+      el.style.height = 'auto'
+      el.style.height = `${el.scrollHeight}px`
+    }
+    resize()
+    window.addEventListener('resize', resize)
+    return () => {
+      window.removeEventListener('resize', resize)
+    }
+  }, [queryDraft])
+  const { data, error, running, loading, setQuery } = useSQL({
+    query: initialQuery,
     databasePath: FPL_DB_PATH,
     sqlWASMPath: SQL_WASM_WASM_PATH,
   })
@@ -35,42 +54,85 @@ function Dashboard({ name, queryFromDatabase }: Props) {
     sqlWASMPath: SQL_WASM_WASM_PATH,
   })
 
+  const executeQuery = () => {
+    setQuery(queryDraft)
+  }
+
+  const showResults = !loading && !error
+
   return (
-    <div className="App">
-      <main className="space-y-2">
-        {name && <h1 className="text-2xl font-bold">{name}</h1>}
+    <div className="space-y-4">
+      {name && (
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
+          {description && (
+            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          )}
+        </div>
+      )}
 
-        <Credit lastUpdated={resultLastUpdated?.[0].lastUpdated}></Credit>
+      <Credit lastUpdated={resultLastUpdated?.[0]?.lastUpdated}></Credit>
 
-        {Boolean(error) && <Alert variant="destructive">{error}</Alert>}
-
-        <Card title="Actions">
+      <Card
+        title="Query"
+        actions={
           <ActionButtons
             queryDraft={queryDraft}
             setQueryDraft={setQueryDraft}
-            query={query}
             setQuery={setQuery}
+            running={running}
           ></ActionButtons>
-        </Card>
+        }
+      >
+        <Textarea
+          ref={textareaRef}
+          value={queryDraft}
+          onChange={(e) => {
+            setQueryDraft(e.target.value)
+          }}
+          onKeyDown={(e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+              e.preventDefault()
+              executeQuery()
+            }
+          }}
+          spellCheck={false}
+          aria-label="SQL query"
+          className="min-h-[160px] max-h-[60vh] resize-none overflow-y-auto font-mono text-[13px] leading-relaxed"
+        />
+      </Card>
 
-        <Card title="Query">
-          <Textarea
-            rows={100}
-            cols={200}
-            style={{ width: '100%', height: '450px', marginBottom: 10 }}
-            value={queryDraft}
-            onChange={(e) => {
-              setQueryDraft(e.target.value)
-            }}
-          />
-        </Card>
+      {Boolean(error) && (
+        <Alert variant="destructive">
+          <AlertTitle>Query failed</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-        {data && (
-          <Card title="Results">
-            <ResultSet data={data} />
-          </Card>
-        )}
-      </main>
+      {loading ? (
+        <Card title="Results">
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            Loading the FPL database…
+          </p>
+        </Card>
+      ) : showResults && data ? (
+        <Card
+          title="Results"
+          actions={
+            <span className="text-xs tabular-nums text-muted-foreground">
+              {data.length} {data.length === 1 ? 'row' : 'rows'}
+            </span>
+          }
+        >
+          <ResultSet data={data} />
+        </Card>
+      ) : showResults ? (
+        <Card title="Results">
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            The query returned no rows.
+          </p>
+        </Card>
+      ) : null}
     </div>
   )
 }
