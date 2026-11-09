@@ -1,18 +1,18 @@
 {
   "schemaVersion": 2,
   "currentSeason": "2026-27",
-  "revision": "00ec7051c89ff486",
+  "revision": "2b8e8d8ac0f62e94",
   "seasons": [
     {
       "season": "2026-27",
       "status": "partial",
-      "sourceRevision": "40be78df40c18aede165e13c08ced23f30dc67e14fbcd8a782a079206ee457f8",
+      "sourceRevision": "e9bc9d769ba38ee1e06c1893bc9e1ec4b3263c167b0224c361717522e5a81a01",
       "sourceUpdatedAt": null,
-      "importedAt": "2026-11-09T07:24:40.667Z",
-      "contentHash": "03478bb626dd8fb810a8042ab8c102d8add504f6680c2f9c53680b3f3baa17a9",
+      "importedAt": "2026-11-09T17:57:19.087Z",
+      "contentHash": "eb3eaa9d6b1eb32efdddbbf6ebb4c76299781715f917e4bcf9e751836946fa37",
       "source": "official",
       "sourceURL": "https://fantasy.premierleague.com/api/bootstrap-static/",
-      "capturedAt": "2026-11-09T07:24:40.665Z",
+      "capturedAt": "2026-11-09T17:57:19.085Z",
       "coverage": {
         "events": [
           {
@@ -80,8 +80,8 @@
           },
           {
             "id": 10,
-            "finished": false,
-            "dataChecked": false,
+            "finished": true,
+            "dataChecked": true,
             "isCurrent": true,
             "isNext": false
           },
@@ -283,7 +283,7 @@
           }
         ]
       },
-      "dataChangedAt": "2026-11-09T07:24:40.667Z"
+      "dataChangedAt": "2026-11-09T17:57:19.087Z"
     },
     {
       "season": "2025-26",
